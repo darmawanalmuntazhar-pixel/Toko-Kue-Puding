@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Kelola Menu Kue Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Memuat berkas data menu utama -->
+    <script src="menu.data.js"></script>
+
+    <style>
+        /* Gaya khusus admin menggunakan variabel dari style.css */
+        body {
+            padding-bottom: 40px;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #2a1f18 0%, #3e2e24 100%);
+            color: #fcefe3;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 0 0 32px 32px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        .admin-header h1 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--color-accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 163, 115, 0.2);
+        }
+
+        .btn-success {
+            background-color: var(--color-whatsapp);
+        }
+        .btn-success:hover {
+            background-color: var(--color-whatsapp-hover);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+        }
+
+        .btn-danger {
+            background-color: #e06c6c;
+        }
+        .btn-danger:hover {
+            background-color: #d15656;
+            box-shadow: 0 4px 12px rgba(224, 108, 108, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-text-muted);
+        }
+        .btn-secondary:hover {
+            background-color: var(--color-text-dark);
+            box-shadow: 0 4px 12px rgba(122, 104, 92, 0.2);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            border: 1px solid rgba(212, 163, 115, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .category-editor-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(212, 163, 115, 0.12);
+        }
+
+        .category-header-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(212, 163, 115, 0.15);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .category-title-admin {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            color: var(--color-text-dark);
+        }
+
+        .admin-item-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .admin-item-card {
+            display: flex;
+            align-items: center;
+            background: #fdfcfa;
+            border: 1px solid rgba(212, 163, 115, 0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            gap: 15px;
+            transition: var(--transition-smooth);
+        }
+
+        .admin-item-card:hover {
+            box-shadow: var(--shadow-sm);
+            border-color: rgba(212, 163, 115, 0.2);
+            background: white;
+        }
+
+        .admin-item-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(212, 163, 115, 0.15);
+        }
+
+        .admin-item-info {
+            flex-grow: 1;
+        }
+
+        .admin-item-name {
+            font-weight: 600;
+            color: var(--color-text-dark);
+            font-size: 0.95rem;
+        }
+
+        .admin-item-price {
+            color: var(--color-accent);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .admin-item-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* Form Modal (Pop-up modern) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(42, 31, 24, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(212, 163, 115, 0.15);
+            position: relative;
+            animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Gaya scrollbar premium untuk konten modal */
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background-color: rgba(212, 163, 115, 0.3);
+            border-radius: 10px;
+        }
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(212, 163, 115, 0.5);
+        }
+
+        @keyframes modalFadeIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            color: var(--color-text-dark);
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0e6df;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--color-text-dark);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #dcd3cb;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            color: var(--color-text-dark);
+            transition: var(--transition-smooth);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.15);
+        }
+
+        .image-preview-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .img-preview {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1.5px solid var(--color-accent);
+            background: #faf7f5;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2a1f18;
+            color: #fcefe3;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            box-shadow: var(--shadow-md);
+            z-index: 1100;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition-smooth);
+            border-left: 4px solid var(--color-accent);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .file-status {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .status-unsaved {
+            background-color: #fdf2f2;
+            color: #e06c6c;
+            border: 1px solid #fde2e2;
+        }
+        .status-saved {
+            background-color: #f2fdf5;
+            color: #25D366;
+            border: 1px solid #e2fded;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Panel Admin -->
+    <header class="admin-header">
+        <h1>Panel Admin Menu Kue</h1>
+        <p style="font-size: 0.95rem; opacity: 0.8;">Kelola pricelist secara visual & update otomatis tanpa menyentuh kode ✨</p>
+    </header>
+
+    <div class="admin-container">
+        
+        <!-- Bar Kontrol & File Handling -->
+        <div class="control-panel">
+            <div>
+                <span class="file-status status-unsaved" id="save-status">Perubahan Belum Disimpan</span>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted); margin-left: 8px;" id="file-path-info">Akses File: Offline (Pilih File untuk Simpan Otomatis)</span>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="addNewCategory()">+ Kategori Baru</button>
+                <button class="btn btn-success" onclick="saveChanges()">💾 Simpan Perubahan</button>
+                <a href="pricelist.html" class="btn" target="_blank">👁️ Buka Pricelist</a>
+            </div>
+        </div>
+
+        <!-- Wadah Rendering Daftar Kategori & Item (Dinamis) -->
+        <div id="admin-menu-content"></div>
+
+    </div>
+
+    <!-- MODAL FORM ITEM KUE -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Tambah Item Kue Baru</div>
+            
+            <input type="hidden" id="edit-cat-index">
+            <input type="hidden" id="edit-item-index">
+
+            <div class="form-group">
+                <label class="form-label" for="item-name">Nama Kue / Produk</label>
+                <input type="text" id="item-name" class="form-control" placeholder="Contoh: Double Chocolate Cake">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="item-price">Harga</label>
+                <input type="text" id="item-price" class="form-control" placeholder="Contoh: Rp 185k">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="item-desc">Deskripsi</label>
+                <textarea id="item-desc" class="form-control" rows="3" placeholder="Contoh: Kue coklat premium berlapis ganache lumer."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="item-badge">Lencana / Badge</label>
+                <select id="item-badge" class="form-control">
+                    <option value="">Tidak Ada</option>
+                    <option value="Signature">Signature</option>
+                    <option value="Best Seller">Best Seller</option>
+                    <option value="New">New</option>
+                </select>
+            </div>
+
+            <!-- Upload & Input Gambar Premium -->
+            <div class="form-group">
+                <label class="form-label">Foto Kue</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <input type="text" id="item-img-url" class="form-control" placeholder="Ketik nama berkas (kue.jpg) atau tempel URL gambar">
+                    <span style="align-self: center; font-size: 0.8rem; font-weight: bold; color: var(--color-text-muted);">ATAU</span>
+                    <button class="btn btn-sm btn-secondary" onclick="document.getElementById('file-upload').click()">Upload Foto</button>
+                    <input type="file" id="file-upload" style="display: none;" accept="image/*" onchange="handleImageUpload(event)">
+                </div>
+                <div class="image-preview-container">
+                    <img id="image-preview" class="img-preview" src="" onerror="this.src='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150'">
+                    <span style="font-size: 0.8rem; color: var(--color-text-muted);">Pratinjau Foto. Format base64 akan otomatis dikompres agar efisien.</span>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
+                <button class="btn btn-secondary" onclick="closeModal('itemModal')">Batal</button>
+                <button class="btn btn-success" onclick="saveItemForm()">Simpan Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">Perubahan disimpan! 🎉</div>
+
+    <!-- LOGIKA JAVASCRIPT PANEL ADMIN -->
+    <script>
+        let fileHandle = null;
+        let isUnsaved = false;
+
+        // Inisialisasi data menu default jika menu.data.js kosong
+        if (!window.menuData) {
+            window.menuData = [];
+        }
+
+        // Tampilkan notifikasi toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Perbarui status penyimpanan berkas
+        function setSaveStatus(saved) {
+            const statusEl = document.getElementById('save-status');
+            if (saved) {
+                statusEl.textContent = "Tersimpan";
+                statusEl.className = "file-status status-saved";
+                isUnsaved = false;
+            } else {
+                statusEl.textContent = "Perubahan Belum Disimpan";
+                statusEl.className = "file-status status-unsaved";
+                isUnsaved = true;
+            }
+        }
+
+        // Render Antarmuka Dasbor Admin
+        function renderAdminContent() {
+            const container = document.getElementById('admin-menu-content');
+            if (window.menuData.length === 0) {
+                container.innerHTML = `
+                    <div style="background: white; border-radius: 20px; padding: 60px 20px; text-align: center; box-shadow: var(--shadow-sm); border: 1px solid rgba(212, 163, 115, 0.12);">
+                        <p style="font-size: 1.1rem; font-weight: 500; color: var(--color-text-dark); margin-bottom: 12px;">Belum ada Kategori Menu</p>
+                        <p style="font-size: 0.88rem; color: var(--color-text-muted); margin-bottom: 20px;">Silakan buat kategori pertama Anda untuk menambahkan kue-kue lezat.</p>
+                        <button class="btn" onclick="addNewCategory()">+ Buat Kategori Pertama</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            window.menuData.forEach((cat, catIdx) => {
+                html += `
+                    <div class="category-editor-card">
+                        <div class="category-header-admin">
+                            <div>
+                                <span style="font-size: 0.8rem; font-weight: bold; color: var(--color-accent); text-transform: uppercase; letter-spacing: 0.5px;">Kategori</span>
+                                <div class="category-title-admin" id="cat-title-text-${catIdx}">${cat.category}</div>
+                            </div>
+                            
+                            <div class="admin-item-actions">
+                                <button class="btn btn-sm btn-secondary" onclick="moveCategory(${catIdx}, -1)">▲</button>
+                                <button class="btn btn-sm btn-secondary" onclick="moveCategory(${catIdx}, 1)">▼</button>
+                                <button class="btn btn-sm btn-secondary" onclick="editCategoryName(${catIdx})">📝 Ganti Nama</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCategory(${catIdx})">🗑️ Hapus</button>
+                            </div>
+                        </div>
+
+                        <div class="admin-item-grid">
+                `;
+
+                if (!cat.items || cat.items.length === 0) {
+                    html += `
+                        <div style="text-align: center; padding: 25px; border: 1.5px dashed #e0d5cb; border-radius: 12px; background: #faf9f6;">
+                            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 10px;">Belum ada item di kategori ini.</p>
+                            <button class="btn btn-sm" onclick="openItemModal(${catIdx}, null)">+ Tambah Item Kue</button>
+                        </div>
+                    `;
+                } else {
+                    cat.items.forEach((item, itemIdx) => {
+                        let unsplashFallback = 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150';
+                        const nameLower = item.name.toLowerCase();
+                        if (nameLower.includes('straw') || nameLower.includes('berry')) {
+                            unsplashFallback = 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=150';
+                        } else if (nameLower.includes('croissant') || nameLower.includes('bread')) {
+                            unsplashFallback = 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150';
+                        }
+                        
+                        const itemImg = (item.img && item.img.trim() !== '') ? item.img : unsplashFallback;
+                        const badgeBadge = item.badge ? `<span class="file-status status-saved" style="font-size: 0.7rem; padding: 2px 8px; margin-left: 8px;">${item.badge}</span>` : '';
+
+                        html += `
+                            <div class="admin-item-card">
+                                <img src="${itemImg}" alt="${item.name}" class="admin-item-thumb" onerror="this.onerror=null; this.src='${unsplashFallback}';">
+                                <div class="admin-item-info">
+                                    <div class="admin-item-name">${item.name} ${badgeBadge}</div>
+                                    <div class="admin-item-price">${item.price}</div>
+                                    <p style="font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.4; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${item.desc}</p>
+                                </div>
+                                <div class="admin-item-actions">
+                                    <button class="btn btn-sm btn-secondary" onclick="moveItem(${catIdx}, ${itemIdx}, -1)">▲</button>
+                                    <button class="btn btn-sm btn-secondary" onclick="moveItem(${catIdx}, ${itemIdx}, 1)">▼</button>
+                                    <button class="btn btn-sm btn-secondary" onclick="openItemModal(${catIdx}, ${itemIdx})">📝 Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button class="btn btn-sm" onclick="openItemModal(${catIdx}, null)">+ Tambah Item Kue</button>
+                        </div>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ==========================================
+        // MANAJEMEN KATEGORI
+        // ==========================================
+        function addNewCategory() {
+            const name = prompt("Masukkan nama kategori baru:");
+            if (name && name.trim() !== '') {
+                window.menuData.push({
+                    category: name.trim(),
+                    items: []
+                });
+                setSaveStatus(false);
+                renderAdminContent();
+                showToast("Kategori baru ditambahkan!");
+            }
+        }
+
+        function editCategoryName(idx) {
+            const current = window.menuData[idx].category;
+            const name = prompt("Ubah nama kategori:", current);
+            if (name && name.trim() !== '' && name.trim() !== current) {
+                window.menuData[idx].category = name.trim();
+                setSaveStatus(false);
+                renderAdminContent();
+                showToast("Nama kategori diperbarui!");
+            }
+        }
+
+        function deleteCategory(idx) {
+            if (confirm(`Apakah Anda yakin ingin menghapus kategori "${window.menuData[idx].category}" beserta semua item didalamnya?`)) {
+                window.menuData.splice(idx, 1);
+                setSaveStatus(false);
+                renderAdminContent();
+                showToast("Kategori berhasil dihapus.");
+            }
+        }
+
+        function moveCategory(idx, dir) {
+            const target = idx + dir;
+            if (target >= 0 && target < window.menuData.length) {
+                const temp = window.menuData[idx];
+                window.menuData[idx] = window.menuData[target];
+                window.menuData[target] = temp;
+                setSaveStatus(false);
+                renderAdminContent();
+            }
+        }
+
+        // ==========================================
+        // MANAJEMEN ITEM KUE (MODAL FORM)
+        // ==========================================
+        function openItemModal(catIdx, itemIdx) {
+            document.getElementById('edit-cat-index').value = catIdx;
+            document.getElementById('edit-item-index').value = itemIdx !== null ? itemIdx : "";
+
+            const nameInput = document.getElementById('item-name');
+            const priceInput = document.getElementById('item-price');
+            const descInput = document.getElementById('item-desc');
+            const badgeInput = document.getElementById('item-badge');
+            const imgInput = document.getElementById('item-img-url');
+            const preview = document.getElementById('image-preview');
+
+            if (itemIdx !== null) {
+                // Mode EDIT
+                document.getElementById('modalTitle').textContent = "Edit Item Kue";
+                const item = window.menuData[catIdx].items[itemIdx];
+                nameInput.value = item.name;
+                priceInput.value = item.price;
+                descInput.value = item.desc;
+                badgeInput.value = item.badge || "";
+                imgInput.value = item.img || "";
+                preview.src = item.img || "";
+            } else {
+                // Mode TAMBAH BARU
+                document.getElementById('modalTitle').textContent = "Tambah Item Kue Baru";
+                nameInput.value = "";
+                priceInput.value = "";
+                descInput.value = "";
+                badgeInput.value = "";
+                imgInput.value = "";
+                preview.src = "";
+            }
+
+            document.getElementById('itemModal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Memantau input manual URL gambar untuk memperbarui preview
+        document.getElementById('item-img-url').addEventListener('input', function() {
+            document.getElementById('image-preview').src = this.value;
+        });
+
+        // Menangani Unggahan Gambar & Kompresi ke Base64
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600;
+                    const MAX_HEIGHT = 600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Konversi ke format JPEG dengan kualitas 75% agar hemat penyimpanan
+                    const base64Str = canvas.toDataURL('image/jpeg', 0.75);
+                    document.getElementById('item-img-url').value = base64Str;
+                    document.getElementById('image-preview').src = base64Str;
+                    showToast("Gambar berhasil terkompresi & siap disimpan!");
+                };
+            };
+        }
+
+        // Menyimpan Form Item
+        function saveItemForm() {
+            const catIdx = parseInt(document.getElementById('edit-cat-index').value);
+            const itemIdxStr = document.getElementById('edit-item-index').value;
+            const name = document.getElementById('item-name').value.trim();
+            const price = document.getElementById('item-price').value.trim();
+            const desc = document.getElementById('item-desc').value.trim();
+            const badge = document.getElementById('item-badge').value;
+            const img = document.getElementById('item-img-url').value.trim();
+
+            if (!name) {
+                alert("Mohon masukkan nama produk!");
+                return;
+            }
+
+            const itemObj = {
+                id: itemIdxStr !== "" ? window.menuData[catIdx].items[parseInt(itemIdxStr)].id : Date.now().toString(),
+                name,
+                price: price || "Hubungi Admin",
+                desc,
+                badge,
+                img
+            };
+
+            if (itemIdxStr !== "") {
+                // Simpan Edit
+                window.menuData[catIdx].items[parseInt(itemIdxStr)] = itemObj;
+                showToast("Item kue berhasil diperbarui!");
+            } else {
+                // Simpan Baru
+                window.menuData[catIdx].items.push(itemObj);
+                showToast("Item kue berhasil ditambahkan!");
+            }
+
+            setSaveStatus(false);
+            closeModal('itemModal');
+            renderAdminContent();
+        }
+
+        function deleteItem(catIdx, itemIdx) {
+            if (confirm("Apakah Anda yakin ingin menghapus produk kue ini?")) {
+                window.menuData[catIdx].items.splice(itemIdx, 1);
+                setSaveStatus(false);
+                renderAdminContent();
+                showToast("Produk berhasil dihapus.");
+            }
+        }
+
+        function moveItem(catIdx, itemIdx, dir) {
+            const items = window.menuData[catIdx].items;
+            const target = itemIdx + dir;
+            if (target >= 0 && target < items.length) {
+                const temp = items[itemIdx];
+                items[itemIdx] = items[target];
+                items[target] = temp;
+                setSaveStatus(false);
+                renderAdminContent();
+            }
+        }
+
+        // ==========================================
+        // TEKNOLOGI PENYIMPANAN BERKAS (FILE ACCESS API)
+        // ==========================================
+        async function saveChanges() {
+            const fileContent = `// BERKAS DATA MENU UTAMA (Dihasilkan Otomatis oleh Panel Admin)
+// Anda dapat mengedit berkas ini secara aman melalui admin.html
+
+window.menuData = ${JSON.stringify(window.menuData, null, 2)};
+`;
+
+            // Cara 1: Menggunakan File System Access API (Simpan langsung instan)
+            if ('showOpenFilePicker' in window) {
+                try {
+                    if (!fileHandle) {
+                        const [handle] = await window.showOpenFilePicker({
+                            types: [{
+                                description: 'JavaScript Data File (menu.data.js)',
+                                accept: {
+                                    'text/javascript': ['.js']
+                                }
+                            }],
+                            excludeAcceptAllOption: true,
+                            multiple: false
+                        });
+
+                        if (handle.name !== 'menu.data.js') {
+                            alert(`Perhatian! Anda memilih berkas dengan nama "${handle.name}". Pastikan Anda menimpanya ke berkas "menu.data.js" agar menu di halaman pricelist utama dapat langsung diperbarui.`);
+                        }
+                        fileHandle = handle;
+                    }
+
+                    // Meminta izin menulis berkas
+                    const options = { mode: 'readwrite' };
+                    if (await fileHandle.queryPermission(options) !== 'granted') {
+                        if (await fileHandle.requestPermission(options) !== 'granted') {
+                            throw new Error("Izin menulis file tidak diberikan oleh browser.");
+                        }
+                    }
+
+                    // Tulis data baru
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(fileContent);
+                    await writable.close();
+
+                    setSaveStatus(true);
+                    document.getElementById('file-path-info').textContent = `Akses File: Terhubung ke "${fileHandle.name}" (Penyimpanan Langsung Aktif)`;
+                    showToast("Selesai! Data menu tersimpan langsung ke menu.data.js 🎉");
+                    return;
+                } catch (err) {
+                    console.error("Kesalahan penyimpanan langsung:", err);
+                    if (err.name === 'AbortError') {
+                        return; // Pengguna membatalkan proses
+                    }
+                    alert("Akses penyimpanan langsung terkendala: " + err.message + "\n\nSistem akan menggunakan metode unduh berkas sebagai cadangan.");
+                }
+            }
+
+            // Cara 2 (Cadangan): Mengunduh Berkas menu.data.js secara manual
+            downloadFallback(fileContent);
+        }
+
+        function downloadFallback(content) {
+            const blob = new Blob([content], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'menu.data.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert("Berkas 'menu.data.js' terbaru berhasil diunduh ke folder Download komputer Anda!\n\nSilakan pindahkan/seret berkas hasil unduhan tersebut ke dalam folder proyek kue Anda (timpa/tindih berkas menu.data.js yang lama) untuk mengaktifkan perubahan menu.");
+            setSaveStatus(true);
+        }
+
+        // Peringatkan pengguna jika ada perubahan yang belum disimpan saat menutup tab
+        window.addEventListener('beforeunload', function (e) {
+            if (isUnsaved) {
+                e.preventDefault();
+                e.returnValue = 'Anda memiliki perubahan menu yang belum disimpan. Yakin ingin keluar?';
+            }
+        });
+
+        // Inisialisasi awal render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAdminContent();
+            setSaveStatus(true); // Default awal diset true karena belum ada perubahan
+        });
+    </script>
+</body>
+</html>
